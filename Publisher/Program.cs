@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Contratos;
 using GreenPipes;
 using MassTransit;
 using MassTransit.Azure.ServiceBus.Core;
+using Contratos;
 using MassTransit.Transports;
 using MassTransit.Util;
 using Microsoft.Azure.ServiceBus.Primitives;
@@ -16,20 +16,24 @@ namespace Publisher
         {
             var bus = Bus.Factory.CreateUsingAzureServiceBus(h =>
             {
-                var host = h.Host("azure service bus endpoint"
+                var host = h.Host(
+                    ""
                     ,
                     z =>
                     {
-                        z.TokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider("RootManageSharedAccessKey", "key");
+                        z.TokenProvider =
+                            TokenProvider.CreateSharedAccessSignatureTokenProvider("RootManageSharedAccessKey",
                     });
 
-               
+
             });
-            
+
             bus.Start();
-            TaskUtil.Await(() => bus.Publish<DoSomething>(new DoSomething {Value = "algo aconteceu"}));
-            TaskUtil.Await(() => bus.Publish<DoSomething>(new DoSomething {Value = "algo aconteceu de novo"}));
-            TaskUtil.Await(() => Task.Delay(2000));
+            TaskUtil.Await(() => bus.Publish(new BlockedLoginEmail()
+                {Destinatario = "danielbezerrakmx@gmail.com", Assunto = "Testando", Nome = "Daniel", Link = "wwww.facebook.com"}));
+            
+
+        TaskUtil.Await(() => Task.Delay(2000));
                 
             bus.Stop();
         }
